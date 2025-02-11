@@ -16,56 +16,42 @@ class Commande
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_commande = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
+    private ?string $reduction = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
     private ?string $total = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2)]
+    private ?string $coefficient = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_paiement = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $methode_paiement = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $adresse_livraison = null;
-
-    #[ORM\Column(length: 100)]
     private ?string $adresse_facture = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $statut_paiemet = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date_livraison = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2)]
+    #[ORM\Column(length: 50)]
     private ?string $etat = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $coefficient = null;
-
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     private ?string $reference = null;
 
-    #[ORM\ManyToOne(inversedBy: 'commandes')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Users $users = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
 
     /**
-     * @var Collection<int, BonLivraison>
+     * @var Collection<int, CommandeDetails>
      */
-    #[ORM\OneToMany(targetEntity: BonLivraison::class, mappedBy: 'commande')]
-    private Collection $bonLivraisons;
-
-    /**
-     * @var Collection<int, Livraison>
-     */
-    #[ORM\OneToMany(targetEntity: Livraison::class, mappedBy: 'commande')]
-    private Collection $livraisons;
+    #[ORM\OneToMany(targetEntity: CommandeDetails::class, mappedBy: 'commande')]
+    private Collection $commandeDetails;
 
     public function __construct()
     {
-        $this->bonLivraisons = new ArrayCollection();
-        $this->livraisons = new ArrayCollection();
+        $this->commandeDetails = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -73,14 +59,21 @@ class Commande
         return $this->id;
     }
 
-    public function getDateCommande(): ?\DateTimeInterface
+    public function setId(int $id): static
     {
-        return $this->date_commande;
+        $this->id = $id;
+
+        return $this;
     }
 
-    public function setDateCommande(\DateTimeInterface $date_commande): static
+    public function getReduction(): ?string
     {
-        $this->date_commande = $date_commande;
+        return $this->reduction;
+    }
+
+    public function setReduction(string $reduction): static
+    {
+        $this->reduction = $reduction;
 
         return $this;
     }
@@ -97,6 +90,18 @@ class Commande
         return $this;
     }
 
+    public function getCoefficient(): ?string
+    {
+        return $this->coefficient;
+    }
+
+    public function setCoefficient(string $coefficient): static
+    {
+        $this->coefficient = $coefficient;
+
+        return $this;
+    }
+
     public function getDatePaiement(): ?\DateTimeInterface
     {
         return $this->date_paiement;
@@ -105,30 +110,6 @@ class Commande
     public function setDatePaiement(\DateTimeInterface $date_paiement): static
     {
         $this->date_paiement = $date_paiement;
-
-        return $this;
-    }
-
-    public function getMethodePaiement(): ?string
-    {
-        return $this->methode_paiement;
-    }
-
-    public function setMethodePaiement(string $methode_paiement): static
-    {
-        $this->methode_paiement = $methode_paiement;
-
-        return $this;
-    }
-
-    public function getAdresseLivraison(): ?string
-    {
-        return $this->adresse_livraison;
-    }
-
-    public function setAdresseLivraison(string $adresse_livraison): static
-    {
-        $this->adresse_livraison = $adresse_livraison;
 
         return $this;
     }
@@ -145,14 +126,14 @@ class Commande
         return $this;
     }
 
-    public function getStatutPaiemet(): ?string
+    public function getDateLivraison(): ?\DateTimeInterface
     {
-        return $this->statut_paiemet;
+        return $this->date_livraison;
     }
 
-    public function setStatutPaiemet(string $statut_paiemet): static
+    public function setDateLivraison(\DateTimeInterface $date_livraison): static
     {
-        $this->statut_paiemet = $statut_paiemet;
+        $this->date_livraison = $date_livraison;
 
         return $this;
     }
@@ -169,18 +150,6 @@ class Commande
         return $this;
     }
 
-    public function getCoefficient(): ?string
-    {
-        return $this->coefficient;
-    }
-
-    public function setCoefficient(string $coefficient): static
-    {
-        $this->coefficient = $coefficient;
-
-        return $this;
-    }
-
     public function getReference(): ?string
     {
         return $this->reference;
@@ -193,72 +162,42 @@ class Commande
         return $this;
     }
 
-    public function getUsers(): ?Users
+    public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->users;
+        return $this->created_at;
     }
 
-    public function setUsers(?Users $users): static
+    public function setCreatedAt(\DateTimeInterface $created_at): static
     {
-        $this->users = $users;
+        $this->created_at = $created_at;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, BonLivraison>
+     * @return Collection<int, CommandeDetails>
      */
-    public function getBonLivraisons(): Collection
+    public function getCommandeDetails(): Collection
     {
-        return $this->bonLivraisons;
+        return $this->commandeDetails;
     }
 
-    public function addBonLivraison(BonLivraison $bonLivraison): static
+    public function addCommandeDetail(CommandeDetails $commandeDetail): static
     {
-        if (!$this->bonLivraisons->contains($bonLivraison)) {
-            $this->bonLivraisons->add($bonLivraison);
-            $bonLivraison->setCommande($this);
+        if (!$this->commandeDetails->contains($commandeDetail)) {
+            $this->commandeDetails->add($commandeDetail);
+            $commandeDetail->setCommande($this);
         }
 
         return $this;
     }
 
-    public function removeBonLivraison(BonLivraison $bonLivraison): static
+    public function removeCommandeDetail(CommandeDetails $commandeDetail): static
     {
-        if ($this->bonLivraisons->removeElement($bonLivraison)) {
+        if ($this->commandeDetails->removeElement($commandeDetail)) {
             // set the owning side to null (unless already changed)
-            if ($bonLivraison->getCommande() === $this) {
-                $bonLivraison->setCommande(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Livraison>
-     */
-    public function getLivraisons(): Collection
-    {
-        return $this->livraisons;
-    }
-
-    public function addLivraison(Livraison $livraison): static
-    {
-        if (!$this->livraisons->contains($livraison)) {
-            $this->livraisons->add($livraison);
-            $livraison->setCommande($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLivraison(Livraison $livraison): static
-    {
-        if ($this->livraisons->removeElement($livraison)) {
-            // set the owning side to null (unless already changed)
-            if ($livraison->getCommande() === $this) {
-                $livraison->setCommande(null);
+            if ($commandeDetail->getCommande() === $this) {
+                $commandeDetail->setCommande(null);
             }
         }
 
