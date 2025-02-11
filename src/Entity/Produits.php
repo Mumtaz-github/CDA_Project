@@ -14,34 +14,48 @@ class Produits
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(length: 250)]
     private ?string $description = null;
 
-    #[ORM\Column]
-    private ?int $prix = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 2)]
+    private ?string $prix = null;
 
     #[ORM\Column]
     private ?int $stock = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $url_photo = null;
+    #[ORM\Column(length: 100)]
+    private ?string $slug = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 250)]
     private ?string $reference_fournisseur = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[ORM\Column(length: 250)]
+    private ?string $url_photo = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
+
+    #[ORM\ManyToOne(inversedBy: 'produitsCollection')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Categories $categories = null;
 
     #[ORM\ManyToOne(inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Categories $categories = null;
+    private ?Fournisseur $fournisseur = null;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getNom(): ?string
@@ -68,12 +82,12 @@ class Produits
         return $this;
     }
 
-    public function getPrix(): ?int
+    public function getPrix(): ?string
     {
         return $this->prix;
     }
 
-    public function setPrix(int $prix): static
+    public function setPrix(string $prix): static
     {
         $this->prix = $prix;
 
@@ -92,14 +106,14 @@ class Produits
         return $this;
     }
 
-    public function getUrlPhoto(): ?string
+    public function getSlug(): ?string
     {
-        return $this->url_photo;
+        return $this->slug;
     }
 
-    public function setUrlPhoto(string $url_photo): static
+    public function setSlug(string $slug): static
     {
-        $this->url_photo = $url_photo;
+        $this->slug = $slug;
 
         return $this;
     }
@@ -116,12 +130,24 @@ class Produits
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getUrlPhoto(): ?string
+    {
+        return $this->url_photo;
+    }
+
+    public function setUrlPhoto(string $url_photo): static
+    {
+        $this->url_photo = $url_photo;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
 
@@ -136,6 +162,18 @@ class Produits
     public function setCategories(?Categories $categories): static
     {
         $this->categories = $categories;
+
+        return $this;
+    }
+
+    public function getFournisseur(): ?Fournisseur
+    {
+        return $this->fournisseur;
+    }
+
+    public function setFournisseur(?Fournisseur $fournisseur): static
+    {
+        $this->fournisseur = $fournisseur;
 
         return $this;
     }

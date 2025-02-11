@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\FournisseurRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FournisseurRepository::class)]
@@ -30,6 +32,17 @@ class Fournisseur
 
     #[ORM\Column(length: 5)]
     private ?string $cp_fournisseur = null;
+
+    /**
+     * @var Collection<int, Produits>
+     */
+    #[ORM\OneToMany(targetEntity: Produits::class, mappedBy: 'fournisseur')]
+    private Collection $produits;
+
+    public function __construct()
+    {
+        $this->produits = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,6 +117,36 @@ class Fournisseur
     public function setCpFournisseur(string $cp_fournisseur): static
     {
         $this->cp_fournisseur = $cp_fournisseur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Produits>
+     */
+    public function getProduits(): Collection
+    {
+        return $this->produits;
+    }
+
+    public function addProduit(Produits $produit): static
+    {
+        if (!$this->produits->contains($produit)) {
+            $this->produits->add($produit);
+            $produit->setFournisseur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduit(Produits $produit): static
+    {
+        if ($this->produits->removeElement($produit)) {
+            // set the owning side to null (unless already changed)
+            if ($produit->getFournisseur() === $this) {
+                $produit->setFournisseur(null);
+            }
+        }
 
         return $this;
     }
