@@ -3,10 +3,14 @@ services:
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: Afpa1234
+      MYSQL_INNODB_FORCE_RECOVERY: 1
     volumes:
       - ./data:/var/lib/mysql
     ports:
       - 3307:3306
+
+    networks:
+      - cda_network
 
   web:
     build: .
@@ -14,6 +18,8 @@ services:
       - 8000:8000
     volumes:
       - .:/var/www
+    networks:
+      - cda_network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -21,31 +27,23 @@ services:
       PMA_HOST: db
     ports:
       - 8080:80
+    networks:
+      - cda_network
 
   mailhog:
     image: mailhog/mailhog
     ports:
       - 1025:1025
       - 8025:8025
-
-###> doctrine/doctrine-bundle ###
-  #database:
-   # image: postgres:${POSTGRES_VERSION:-16}-alpine
-   # environment:
-     # POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-     # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-     # POSTGRES_USER: ${POSTGRES_USER:-app}
-   # volumes:
-     # - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+    networks:
+      - cda_network
 
 volumes:
   data:
     driver: local
 
-###> doctrine/doctrine-bundle ###
- ## database_data:
-###< doctrine/doctrine-bundle ###
+networks:
+  cda_network:
+    driver: bridge
+
+
